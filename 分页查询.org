@@ -1,0 +1,38 @@
+* 分页查询SQL语句
+分页查询需要参数pageNo页数，pageSize条数
+客户端传递这两个参数，数据库负责查询出具体页数的记录
+** MySQL分页
+mysql提供了分页函数limit m, n
+查询第1条到第10条(第一页的数据):
+#+BEGIN_SRC sql
+select * from table limit 0, 10;
+#+END_SRC
+查询第10条到第20条(第二页的数据):
+#+BEGIN_SRC sql
+select * from table limit 10, 20;
+#+END_SRC
+查询第20条到第30条(第三页的数据):
+#+BEGIN_SRC sql
+select * from table limit 20, 30;
+#+END_SRC
+
+分页实际上就是从结果集合中截取第M-N条记录
+mysql分页：select * from table limit (pageNo-1)*pageSize, pageSize;
+或者使用offset：select * from table limit pageSize offset pageSize*(pageNo-1)
+
+** Oracle分页
+1.第一种
+#+BEGIN_SRC sql
+select * from (select t.*, rownum RN from table_name t) where RN > 0 and RN <=15;
+#+END_SRC
+t是别名，rn表示行查询出来的结果是按照行号1到15的数据
+2.第二种
+#+BEGIN_SRC sql
+select * from (select t.*, rownum RN from table_name t) where RN between 1 and 15;
+#+END_SRC
+*** 业务场景
+表A有100条记录，将表分为20页，获取第2页的记录
+#+BEGIN_SRC sql
+select * from (select A.*, rownum rn from A) where rn >5 and rn <= 10;
+
+#+END_SRC
