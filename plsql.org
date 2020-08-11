@@ -1,0 +1,125 @@
+* plsql快速入门
+** HelloWorld
+- plsql不区分大小写
+- plsql可以分3个部分：声明部分，可执行部分，异常处理部分
+#+BEGIN_SRC sql
+declare
+  -- 声明变量，游标
+  i integer;
+begin
+  -- 执行语句
+
+  -- 异常处理
+end;
+
+#+END_SRC
+
+#+BEGIN_SRC sql
+-- hello world
+declare
+  i integer;
+begin
+  DBMS_output.put_line('hello world');
+end;
+#+END_SRC
+
+** 普通变量
+char vachar2 date number boolean long
+** 特殊变量
+*** 引用型变量
+变量类型和长度取决于表中字段的类型和长度
+表名.列名%TYPE 指定变量类型和长度 如，v_name emp.ename%type;
+#+BEGIN_SRC sql
+-- 查询emp中的个人信息，
+declare
+  -- 姓名,工资 普通变量
+  v_name varchar2(20);
+  v_sal number;
+  -- 姓名,工资 引用型变量
+  w_name emp.ename%TYPE;
+  w_sal emp.sal%TYPE;
+begin
+  select ename, sal into v_name, v_sal from emp where empno = 7449;
+  dbms_output.put_line('姓名:' || v_name || ',工资:' || v_sal);
+
+  select ename, sal into w_name, w_sal from emp where empno = 7449;
+  dbms_output.put_line('姓名:' || w_name || ',工资:' || w_sal);
+end;
+#+END_SRC
+
+*** 记录型变量
+表示接受表中的一行记录，相当于Java中的一个对象
+变量名 表名%rowtype 如， v_emp emp%rowtype
+#+BEGIN_SRC sql
+declare
+  -- 记录型变量
+  v_emp emp%rowtype;
+begin
+  select * into v_emp from emp where empno = 7449;
+  dbms_output.put_line('name:' || v_emp.ename || ', salary:' || v_emp.sal);
+end;
+
+#+END_SRC
+
+** 流程控制
+*** 条件
+#+BEGIN_SRC sql
+declare
+  -- 声明变量
+  v_count number;
+begin
+  select count(1) into v_count from emp;
+  if v_count>20 then
+    dbms_output.put_line('emp records > 20:' || v_count);
+  elsif v_count>=10 then
+    dbms_output.put_line('emp records betweent 10 and 20:' || v_count);
+  else
+    dbms_output.put_line('emp records < 10:' || v_count);
+  end if;
+end;
+
+#+END_SRC
+*** 循环
+#+BEGIN_SRC sql
+-- 循环输出1到10
+declare
+  v_num number := 1;
+begin
+  loop
+  exit when v_num>10;
+  dbms_output.put_line(v_num);
+  v_num := v_num+1;_
+  end loop;
+end;
+
+#+END_SRC
+
+** 游标
+用于临时存储一个查询返回的多行数据（类似Java的集合），遍历游标可以逐行访问处理该集合的数据。
+使用方式：声明-->打开-->读取-->关闭
+- 声明，cursor 游标名(参数列表) is 查询语句;
+- 打开，open 游标名;
+- 游标取值，fetch 游标名 into 变量列表;
+- 游标关闭，close 游标名;
+
+#+BEGIN_SRC sql
+declare
+  -- 声明游标
+  cursor c_emp is select ename, sal from emp;
+  -- 声明变量接受游标中的数据
+  v_ename emp.ename%type;
+  v_sal emp.sal%type;
+begin
+  -- 打开游标
+  open c_emp;
+  -- 遍历游标
+  loop
+  -- 获取游标中的数据
+  fetch c_emp into v_ename, v_sal;
+  exit when c_emp%notfound;
+  dbms_output.put_line(v_name || '  ' || v_sal);
+  end loop;
+  -- 关闭游标
+  close c_emp;
+
+#+END_SRC
