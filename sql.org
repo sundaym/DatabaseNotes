@@ -1,0 +1,109 @@
+* sql(Structured Query Language)
+sql分为以下几大类
+1.数据定义语言(DDL),如create drop alter语句等
+2.数据操作语言(DML),如insert update delete
+3.数据查询语言(DQL),如select
+4.数据控制语言(DCL),如grant revoke commit rollback等语句
+
+** Database
+- A Database is a collection of data stored in a format that can easily be accessed.
+- 为了管理数据库，我们使用一种叫做DBMS（数据库管理系统）的软件应用
+- 我们连接到一个DBMS，然后下达查询或修改数据的指令，DBMS就会执行指令并返回结果
+- DBMS分类：Relational, NoSQL
+
+** 学习目标
+- Retrieving Data
+- Inserting Data
+- Updating Data
+- Deleting Data
+- Summarizing Data(汇总数据来创建报告)
+- Writing Complex Queries(使用子查询来编写复杂查询)
+- Built-in Functions(MySQL的基本内置函数,用于数字，日期及文本数据)
+- Views
+- Stored Procedures
+- Function
+- Triggers(触发器)
+- Events(事件)
+- Transactions(事务)
+- Concurrency(并发)
+- Desinging Database(设计数据库)
+- Indexing for High Performance
+- Securing Database(如何保护你的数据库:创建用户账户,分配各种权限)
+
+** 查询语句
+通过写查询来得到数据库中的数据的第一步：选中一个Database。
+我们写的查询会针对那个Database执行
+#+BEGIN_SRC sql
+-- sql不分大小写，最好的做法就是大写sql的关键字并小写其余所有内容
+-- 第一步：选中一个Database
+USE sql_store;
+
+SELECT *
+FROM customers
+WHERE customer_id = 1
+ORDER BY first_name
+#+END_SRC
+*** 选择子句(SELECT Clause)
+#+BEGIN_SRC sql
+SELECT
+  last_name,
+  first_name,
+  points,
+  (points + 10) * 100 AS discount_factor -- 使用AS关键字给这一列一个别名
+FROM customers
+
+#+END_SRC
+
+如果想在结果集中得到一份州的唯一列表,使用DISTINCT关键字
+#+BEGIN_SRC sql
+-- 通过这条查询就能在customers表获取一份州的唯一列表，多个客户可能所属相同的州
+SELECT DISTINCT state
+FROM customers
+
+#+END_SRC
+*** WHERE子句(WHERE Clause)
+#+BEGIN_SRC sql
+-- 查询积分大于3000的语句
+SELECT *
+FROM customers
+WHERE points > 3000
+
+SELECT *
+FROM customers
+WHERE birth_date > '1990-01-01' -- 用引号表述日期值 即使日期不算是字符串
+#+END_SRC
+*** AND OR NOT 运算符
+#+BEGIN_SRC sql
+SELECT *
+FROM customers
+WHERE birth_date > '1990-01-01' OR (points>1000 AND state='VA')
+-- 逻辑运算符优先级 NOT AND OR
+#+END_SRC
+*** IN 运算符
+#+BEGIN_SRC sql
+SELECT *
+FROM customers
+WHERE state IN ('VA', 'FL', 'GA')
+-- WHERE state NOT IN ('VA', 'FL', 'GA')
+
+#+END_SRC
+*** BETWEEN 运算符
+#+BEGIN_SRC sql
+-- 假设我们想获取积分介于1000和3000之间的客户
+SELECT *
+FROM customers
+-- WHERE points >= 1000 AND points <= 3000
+WHERE points BETWEEN 1000 AND 3000
+
+#+END_SRC
+*** LIKE 运算符
+#+BEGIN_SRC sql
+-- 想获得B开头姓氏的客户而B之后可能有任意长度的字符，用%表示任意字符数
+SELECT *
+FROM customers
+WHERE last_name LIKE 'B%' -- B不分大小写
+-- LIKE '%b%' 表示b前后任意字符数
+-- LIKE '_y' _表示一个单字符,这样获取姓氏以y结尾2个字符长度的客户
+-- % any number of characters
+-- _ single character
+#+END_SRC
