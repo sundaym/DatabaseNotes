@@ -107,3 +107,82 @@ WHERE last_name LIKE 'B%' -- B不分大小写
 -- % any number of characters
 -- _ single character
 #+END_SRC
+*** REGEXP运算符
+#+BEGIN_SRC sql
+SELECT *
+FROM customers
+WHERE last_name REGEXP 'field'
+-- ^field 表示必须以field开头
+-- field$ 表示必须以field结尾
+-- field|mac 表示包含field或mac
+-- [gim]e 表示 ge ie me
+-- [a-h]e 等于[abcdefgh]e
+
+
+#+END_SRC
+*** NULL 运算符
+#+BEGIN_SRC sql
+SELECT *
+FROM customers
+WHERE phone IS NOT NULL
+
+#+END_SRC
+*** LIMIT Clause
+#+BEGIN_SRC sql
+-- 限定查询返回的记录数
+SELECT *
+FROM customers
+LIMIT 3 -- 返回前3条数据
+-- LIMIT 6,3 跳过前6条获取3条
+
+#+END_SRC
+*** INNER JOIN
+#+BEGIN_SRC sql
+-- MySQL INNER可写可不写
+SELECT *
+FROM orders o
+JOIN customers c
+ON o.customer_id=c.customer_id
+
+#+END_SRC
+*** Self joins 自连接
+#+BEGIN_SRC sql
+SELECT *
+FROM employees e
+JOIN employees m
+ON e.reports_to=m.employee_id
+
+SELECT e.employee_id, e.first_name, m.first_name AS manager
+FROM employees e
+JOIN employees m
+ON e.reports_to=m.employee_id
+
+#+END_SRC
+*** 多表连接
+#+BEGIN_SRC sql
+SELECT
+    o.order_id,
+    o.order_date,
+    c.first_name,
+    c.last_name,
+    os.name AS status
+FROM orders o
+JOIN customers c
+ON o.customer_id=c.customer_id
+JOIN order_statuses os
+ON o.status=os.order_status_id
+
+#+END_SRC
+*** Implicit Joins Syntax隐式连接
+#+BEGIN_SRC sql
+-- 隐式内连接
+SELECT *
+FROM orders o, customers c
+WHERE o.customer_id=c.customer_id
+
+#+END_SRC
+*** Outer Joins 外连接
+#+BEGIN_SRC sql
+
+
+#+END_SRC
