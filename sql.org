@@ -183,6 +183,110 @@ WHERE o.customer_id=c.customer_id
 #+END_SRC
 *** Outer Joins 外连接
 #+BEGIN_SRC sql
+-- INNER JOIN
+-- 我们只能看到有订单的客户下面的连接条件，有的客户没订单，订单表中就没有记录
+SELECT
+    c.customer_id,
+    c.first_name,
+    o.order_id
+FROM customers c
+JOIN orders o
+ON c.customer_id=o.customer_id
+ORDER BY c.customer_id
 
+-- OUTER JOIN
+-- 如果想看到所有的客户，不管它们有没有订单
+-- 两种LEFT JOIN和RIGHT JOIN
+-- left join所有左表的记录会被返回，不管条件正确不正确
+SELECT
+    c.customer_id,
+    c.first_name,
+    o.order_id
+FROM customers c  -- 左表
+LEFT JOIN orders o
+ON c.customer_id=o.customer_id
+ORDER BY c.customer_id
+#+END_SRC
+*** 多表外连接
+#+BEGIN_SRC sql
+SELECT
+    c.customer_id,
+    c.first_name,
+    o.order_id,
+    sh.name AS shipper
+FROM customers c
+LEFT JOIN orders o
+ON c.customer_id=o.customer_id
+LEFT JOIN shippers sh -- 发货人
+ON o.shipper_id=sh.shipper_id
+ORDER BY c.customer_id
+#+END_SRC
+*** Self Outer Joins 自外连接
+*** USING CLAUSE USING子句
+#+BEGIN_SRC sql
+-- MySQL提供USINGA
+SELECT
+    o.order_id,
+    c.first_name
+FROM orders o
+JOIN customers c
+-- ON o.customer_id=c.customer_id
+-- 只能在不同表中列名完全一样的情况下使用
+USING (customer_id) -- 等价于上面的写法
+#+END_SRC
+*** Unions 联合
+#+BEGIN_SRC sql
+-- 使用UNION运算符可以合并多段查询记录
+SELECT
+    order_id,
+    order_date,
+    'Active' AS status --活跃
+FROM orders
+WHERE order_date>='2019-01-01';
+UNION
+SELECT
+    order_id,
+    order_date,
+    'Archived' AS status --归档
+FROM orders
+WHERE order_date<'2019-01-01'
+#+END_SRC
+*** Column Attributes列属性
+MySQL列属性
+| Column | Datatype | PK   | NN       |   | UQ | BIN | UN | ZF | AI   | G | Default/Expression |
+|--------+----------+------+----------+---+----+-----+----+----+------+---+--------------------|
+| 列名   | 数据类型 | 主键 | not null |   |    |     |    |    | 自增 |   | 默认值             |
+
+自增属性被启用，如果我们不提供任何值，MySQL就会帮我们生成一个唯一值
+*** Inserting a Row
+#+BEGIN_SRC sql
+INSERT INTO customers (
+    id, -- 可省略
+    first_name,
+    last_name,
+    birth_date,
+    address,
+    city,
+    state,
+    points) -- 可省略
+VALUES (
+    DEFAULT, -- 可省
+    'John',
+    'Smith',
+    '1990-01-01,'
+    NULL,
+    'address',
+    'city',
+    'CA',
+    DEFAULT) -- 可省
 
 #+END_SRC
+*** Inserting Multiple Rows
+#+BEGIN_SRC sql
+INSERT INTO shippers (name)
+VALUES
+('Shipper1'),
+('Shipper2'),
+('Shipper3')
+#+END_SRC
+***
