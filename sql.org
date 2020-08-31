@@ -289,4 +289,35 @@ VALUES
 ('Shipper2'),
 ('Shipper3')
 #+END_SRC
-***
+*** Inserting Hierarchical Rows 插入分层行
+#+BEGIN_SRC sql
+INSERT INTO orders (customer_id, order_date, status)
+VALUES (1, '2019-01-02', 1)
+
+#+END_SRC
+*** Creating a Copy of a Table创建表复制
+想把这张表的每一行插入到新表中
+#+BEGIN_SRC sql
+-- 为了创建新表使用CREATE TABLE AS
+CREATE TABLE orders_archived AS
+SELECT * FROM orders -- 子查询，子查询是部分属于另一段SQL语句的选择语句
+
+-- Truncate Table 删除表中所有行
+
+#+END_SRC
+*** Updating a Single Row更新单行
+#+BEGIN_SRC sql
+UPDATE invoices
+SET payment_total = 10, payment_date='2019-03-01'
+WHERE invoice_id = 1
+#+END_SRC
+*** Updating Multiple Rows
+#+BEGIN_SRC sql
+UPDATE customers
+SET points = points + 50
+WHERE birth_date < '1990-01-01'
+#+END_SRC
+*** Using Subqueries in Updates Updates中使用子查询
+#+BEGIN_SRC sql
+
+#+END_SRC
