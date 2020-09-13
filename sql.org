@@ -321,3 +321,117 @@ WHERE birth_date < '1990-01-01'
 #+BEGIN_SRC sql
 
 #+END_SRC
+*** Deleting Rows
+#+BEGIN_SRC sql
+DELETE FROM invoices -- 不屑where子句会删除表里的全部数据
+WHERE invoice_id=1
+
+DELETE FROM invoices
+WHERE client_id=(
+    SELECT * FROM clients WHERE name='Myworks'
+)
+
+#+END_SRC
+*** Restoring the Databases恢复数据库
+*** Aggregate Functions汇总数据
+SQL中的聚合函数使用
+MAX()
+MIN()
+AVG()
+SUM()
+COUNT()
+#+BEGIN_SRC sql
+SELECT
+-- 也可以用于日期和字符串
+-- MAX(payment_date) 这里的值得到是最近的日期
+MAX(invoice_total) AS highest,
+MIN(invoice_total) AS lowest,
+AVG(invoice_total) AS average,
+SUM(invoice_total) AS total,
+COUNT(invoice_total) AS number_of_invoices
+FROM invoices
+WHERE invoice_date > '2019-07-01'
+#+END_SRC
+*** The Group By Clause|Gourp By子句
+#+BEGIN_SRC sql
+SELECT
+SUM(invoice_total) AS total_sales -- 总的销售额
+FROM invoices
+
+-- 如果想要知道每个客户的总销售额，就需要对一列或多列数据进行分组
+SELECT
+    client_id,
+    SUM(invoice_total) AS total_sales
+FROM invoices
+WHERE invoice_date >= '2019-07-01' -- GROUP BY子句永远在FROM和WHERE子句之后，在ORDER BY子句之前
+GROUP BY client_id -- 默认状态下数据是按照GROUP BY子句总指定的列排序的
+ORDER BY total_sales DESC -- 可以使用ORDER BY子句来调整排序
+#+END_SRC
+
+#+BEGIN_SRC sql
+-- 用多列进行分组
+SELECT
+    state,
+    city,
+    SUM(invoice_total) AS total_sales
+FROM invoices i
+JOIN clients USING (client_id)
+GROUP BY state, city -- 按照州和城市分组
+-- 每个state和city组合，我们得到一条数据
+#+END_SRC
+*** The HAVING clause|HAVING子句
+#+BEGIN_SRC sql
+-- HAVING子句在对数据进行分组后筛选数据
+SELECT
+    client_id,
+    SUM(invoice_total) AS total_sales
+FROM invoices
+GROUP BY total_sales
+HAVING total_sales > 500
+
+#+END_SRC
+*** Subqueries|子查询
+#+BEGIN_SRC sql
+-- 找出所有产品价格比生菜贵的(id=3)
+SELECT *
+FROM products
+WHERE unit_price >(
+    SELECT unit_price
+    FROM products
+    WHERE product_id=3
+)
+-- SQL执行是会先对内查询(或子查询)进行运算，获得生菜的单价，然后把结果传给外查询
+#+END_SRC
+*** The IN Operator|IN运算符
+#+BEGIN_SRC sql
+-- 查询出所有不在订单中的商品
+SELECT *
+FROM products
+WHERE product_id NOT IN (
+    SELECT DISTINCT product_id
+    FROM order_items
+)
+
+#+END_SRC
+*** Subqueries vs Joins
+子查询和连接互换
+#+BEGIN_SRC sql
+-- Find client without invoices
+SELECT *
+FROM clients
+WHERE client_id NOT IN (
+    SELECT DISTINCT client_id
+    FROM invoices
+)
+
+SELECT *
+FROM clients
+LEFT JOIN invoices USING client_id
+WHERE invoice_id IS NULL
+
+#+END_SRC
+*** The ALL Keyword|ALL 关键字
+#+BEGIN_SRC sql
+
+
+#+END_SRC
