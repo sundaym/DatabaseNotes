@@ -80,4 +80,47 @@ public class PreparedstatementTest {
 
         conn.commit();
     }
+
+    /**
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testUpdate() throws Exception {
+        // 1.获取连接
+        Connection conn = JDBCUtils.getConnection();
+        // 2.预编译SQL语句，返回PreparedStatement实例
+        String sql = "update customers set name = ? where id = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        // 3.填充占位符
+        ps.setObject(1, "abcd");
+        ps.setObject(2, 20);
+        // 4.执行
+        ps.execute();
+        // 5.资源关闭
+        JDBCUtils.closeResource(conn, ps);
+    }
+
+    /**
+     * 通用的增删改 操作
+     * @param sql
+     * @param args
+     */
+    public void update(String sql, Object... args) {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        try {
+            connection = JDBCUtils.getConnection();
+            ps = connection.prepareStatement(sql);
+            for (int i = 1; i <= args.length; i++) {
+                ps.setObject(i, args[i-1]);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            JDBCUtils.closeResource(connection, ps);
+        }
+
+
+    }
 }
