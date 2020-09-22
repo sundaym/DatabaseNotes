@@ -28,7 +28,21 @@ public class JDBCUtils {
      * @param conn
      * @param ps
      */
-    public void closeResource(Connection conn, PreparedStatement ps) {
+    public static void closeResource(Connection conn, PreparedStatement ps) {
+        try {
+            if (conn != null) {
+                conn.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        try {
+            if (ps != null) {
+                ps.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
