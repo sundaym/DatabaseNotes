@@ -106,7 +106,7 @@ public class PreparedstatementTest {
      * @param sql
      * @param args
      */
-    public void update(String sql, Object... args) {
+    public static void update(String sql, Object... args) {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
