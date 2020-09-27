@@ -1,0 +1,36 @@
+* Oracle存储结构
+Oracle存储结构分为逻辑存储和物理存储结构
+** 逻辑存储结构
+1.数据库由一个或多个表空间组成
+2.一个表空间(tablespace)由一组段组成
+3.一个段(segment)由一组区组成
+4.一个区(extent)由一批数据库块组成
+5.一个数据库块(block)对应一个或者多个物理块
+*** 表空间 Tablespaces
+一个表空间只能属于一个数据库。表空间是最大的逻辑单位，对应一个或多个数据文件，通常由相关的段组成。
+表空间的大小是它所对应的数据文件大小的总和。
+*** 段 Segments
+*** 盘区 extents
+*** 数据块 Data block
+** 表空间的一些参数含义
+create table X_SMALL_AREA
+(
+  idx_id        NUMBER(20) not null,
+  pss_idx_id    NUMBER(20),
+  update_log    VARCHAR2(512),
+  update_date   DATE,
+  constraint PK_PSS_LOG primary key (idx_id),
+  constraint FK_PSS_LOG foreign key (pss_idx_id)
+  references POFS_SERIAL_SYSTEM (idx_id)
+)
+
+tablespace TBSL_SDDQ --表段X_SMALL_AREA放在表空间TBSL_SDDQ中
+  pctfree 10 --块保留10%的空间留给更新该块数据使用
+  initrans 1 --初始化事务槽的个数
+  maxtrans 255 --最大事务槽的个数
+  storage --存储参数
+  (
+    initial 64k --区段(extent)一次扩展64k
+    minextents 1 --最小区段数
+    maxextents unlimited --最大区段无限制
+  );
