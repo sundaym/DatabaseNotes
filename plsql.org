@@ -123,3 +123,14 @@ begin
   close c_emp;
 
 #+END_SRC
+** merge into
+不存在就在表中插入信息，存在就更新表中的信息
+#+BEGIN_SRC sql
+merge into student a
+using (select '7' as id from dual) s
+on (a.id = s.id)
+when matched then
+    update set a.student_name='Tom 1'
+when not matched then
+    insert (id, student_name, fk_class) values ('7', 'Tom')
+#+END_SRC
