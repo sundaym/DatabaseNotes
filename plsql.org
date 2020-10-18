@@ -134,3 +134,9 @@ when matched then
 when not matched then
     insert (id, student_name, fk_class) values ('7', 'Tom')
 #+END_SRC
+** PL/SQL command窗口常用指令
+- desc <表名>; -- 查看表结构详细信息
+- select * from user_tab_identity_cols; -- 12c查看自增字段
+oracle 12c自增字段也是序列实现，并且系统生成的序列无法手动删除，因为他与表相关联，
+删除表会将表及其序列留在回收站中，清空回收站就能将系统生成的序列删除。
+- purge recyclebin;
