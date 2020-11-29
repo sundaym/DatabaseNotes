@@ -432,6 +432,50 @@ WHERE invoice_id IS NULL
 #+END_SRC
 *** The ALL Keyword|ALL 关键字
 #+BEGIN_SRC sql
+-- 选择大于客户3发票额的发票
+SELECT * FROM invoices WHERE invoice_total > ALL (
+    -- 执行这段子查询会得到好几个值而不是单一值,因为客户3有多张发票
+    SELECT invoice_total FROM invoices WHERE client_id = 3
+)
 
+#+END_SRC
+*** THe EXISTS Operator
+#+BEGIN_SRC sql
+-- EXISTS子查询并没有真的把结果集返回给外查询
+SELECT * FROM clients c
+WHERE EXISTS (
+    SELECT client_id FROM invoices WHERE client_id=c.client_id
+)
+#+END_SRC
+*** Subqueries in the SELECT Clause
+*** Stored Procedures 存储过程
+假设你在开发一个应用，应用有一个数据库，你在哪里写SQL语句？
+不会在应用代码里写语句，因为有如下几个原因：
+1.他会让你的代码很混乱，难以维护
+2.Java这样的语言需要编译，在应用代码中写SQL查询，然后发现需要修改其中的查询，
+你必须重新编译代码才能生效，所以每次修改SQL代码，都需要重新编译或者可能重新
+部署应用代码。
+3.不能将应用代码和SQL代码分离，把SQL代码存储在他应属于的数据库里。
+
+存储过程是一个包含一堆SQL代码的数据库对象，在应用代码中我们调用这些过程来获取或保存数据。
+所以我们使用存储过程来存储和管理SQL代码(to store and oranize SQL).
+存储过程还有其它优势，大多数DBMS可以对存储过程里的代码做一些优化。因此存储过程里的SQL代码
+有时候可以执行起来更快(Faster execution)。
+此外存储过程能加强数据安全性(Data security), 如可以取消对所有表的直接访问权限并让很多操作(增删改查)
+由存储过程完成，然后可以指定能够执行特定存储过程的某一人。
+*** Creating a Stored Procedure
+#+BEGIN_SRC sql
+DELIMETER $$ --使用DELIMETER语句改变默认分隔符
+CREATE PROCEDURE get_clients() -- 在这里添加参数，给存储过程传递值
+BEGIN  -- BEGIN和END之间的内容称为存储过程的主体(body)
+    SELECT * FROM clients;
+END$$
+
+DELIMETER ;
+
+#+END_SRC
+*** Parameters 存储过程中添加参数
+#+BEGIN_SRC sql
+-- 一般使用参数为存储过程传递值
 
 #+END_SRC
